@@ -22,50 +22,50 @@ string extractValue(string s) {
 
 class Item {
 private:
-    int id; 
-    string title;
-    string genre;
-    string type;
+    int ID; 
+    string Title;
+    string Genre;
+    string Type;
     double totalRating;
     int ratingCount;
 
 public:
     // Constructors
     Item() {
-        id = 0;
-        title = "";
-        genre = "";
-        type = "";
+        ID = 0;
+        Title = "";
+        Genre = "";
+        Type = "";
         totalRating = 0.0;
         ratingCount = 0;
     }
 
     // Setters
-    void setId(int i) {
-        id = i;
+    void setID(int i) {
+        ID = i;
     }
     void setTitle(string t) {
-        title = t;
+        Title = t;
     }
     void setGenre(string g) {
-        genre = g;
+        Genre = g;
     }
     void setType(string t) {
-        type = t;
+        Type = t;
     }
 
     // Getters
     string getTitle() const {
-        return title;
+        return Title;
     }
     string getGenre() const {
-        return genre;
+        return Genre;
     }
     string getType() const {
-        return type;
+        return Type;
     }
     int getId() const {
-        return id;
+        return ID;
     }
     
     void addRating(double r) {
@@ -82,48 +82,54 @@ public:
 };
 
 ostream& operator<<(ostream& os, const Item& item) {
-    os << "[" << item.type << "] " << item.title << " (Rating: " << item.getAverageRating() << ")";
+    os << "[" << item.Type << "] " << item.Title << " (Rating: " << item.getAverageRating() << ")";
     return os;
 }
 
 
 class Person {
 protected:
-    string name;
-    string city;
+    string Name;
+    string City;
 
 public:
     Person() {
-        name = "";
-        city = "";
+        Name = "";
+        City = "";
     }
     Person(string n, string c) {
-        name = n;
-        city = c;
+        Name = n;
+        City = c;
     }
     
     string getName() const {
-        return name;
+        return Name;
     }
     string getCity() const {
-        return city;
+        return City;
     }
 };
 
 class User : public Person {
 private:
-    int id;
-    string ageGroup;
+    int Id;
+    string AgeGroup;
 
 public:
     User() {
-        person();
-        id = 0;
-        agegroup = "";
+        Person();
+        Id = 0;
+        AgeGroup = "";
     }
-    User(int i, string n, string c, string a) : Person(n, c), id(i), ageGroup(a) {}
+    User(string n, string c, int id,string a) {
+        Person(n,c);
+        Id = id;
+        AgeGroup = a;
+    }
 
-    int getId() const { return id; }
+    int getId() const { 
+        return Id;
+    }
 
     bool operator==(const User& other) const {
         return this->name == other.name;
@@ -326,4 +332,5 @@ int main() {
 
     return 0;
 }
+
 
