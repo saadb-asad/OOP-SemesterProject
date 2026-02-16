@@ -116,7 +116,11 @@ private:
     string ageGroup;
 
 public:
-    User() : Person(), id(0), ageGroup("") {}
+    User() {
+        person();
+        id = 0;
+        agegroup = "";
+    }
     User(int i, string n, string c, string a) : Person(n, c), id(i), ageGroup(a) {}
 
     int getId() const { return id; }
@@ -322,3 +326,4 @@ int main() {
 
     return 0;
 }
+
