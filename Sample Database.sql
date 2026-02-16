@@ -1,70 +1,328 @@
--- Create the database
 CREATE DATABASE IF NOT EXISTS ItemBasedCF_DB;
 USE ItemBasedCF_DB;
-
--- 1. Users Table
+DROP TABLE IF EXISTS Interactions;
+DROP TABLE IF EXISTS Items;
+DROP TABLE IF EXISTS Users;
 CREATE TABLE IF NOT EXISTS Users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL
+    username VARCHAR(50) NOT NULL,
+    city VARCHAR(50),
+    age_group VARCHAR(20)
 );
-
--- 2. Items Table (Movies/Products)
 CREATE TABLE IF NOT EXISTS Items (
     item_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
-    genre VARCHAR(50)
+    genre VARCHAR(50),
+    item_type VARCHAR(30) -- Movie, Drama, Product, etc.
 );
-
--- 3. Interactions Table (Ratings)
 CREATE TABLE IF NOT EXISTS Interactions (
     interaction_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     item_id INT,
     rating FLOAT,
+    interaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (item_id) REFERENCES Items(item_id)
 );
-
--- Insert Dummy Data
-
--- Users
-INSERT INTO Users (username) VALUES ('Alice'), ('Bob'), ('Charlie'), ('David'), ('Eve');
-
--- Items (Movies)
-INSERT INTO Items (title, genre) VALUES 
-('The Matrix', 'Sci-Fi'),
-('Inception', 'Sci-Fi'),
-('Titanic', 'Romance'),
-('The Notebook', 'Romance'),
-('Die Hard', 'Action'),
-('Mad Max', 'Action');
-
--- Interactions
--- Alice likes Sci-Fi
+INSERT INTO Users (username, city, age_group) VALUES 
+('Ahmed_Khan', 'Karachi', '18-25'),
+('Fatima_Ali', 'Karachi', '26-35'),
+('Hassan_Sheikh', 'Karachi', '18-25'),
+('Ayesha_Siddiqui', 'Karachi', '26-35'),
+('Bilal_Ahmed', 'Karachi', '36-45'),
+('Zainab_Malik', 'Karachi', '18-25'),
+('Usman_Raza', 'Karachi', '26-35'),
+('Maryam_Khan', 'Karachi', '18-25'),
+('Ali_Hassan', 'Karachi', '26-35'),
+('Sara_Ahmed', 'Karachi', '18-25'),
+('Imran_Sheikh', 'Karachi', '36-45'),
+('Hina_Tariq', 'Karachi', '26-35'),
+('Kamran_Siddiqui', 'Karachi', '46+'),
+('Nadia_Farooq', 'Karachi', '26-35'),
+('Farhan_Malik', 'Karachi', '18-25'),
+('Amna_Rizvi', 'Karachi', '26-35'),
+('Salman_Qureshi', 'Karachi', '36-45'),
+('Rabia_Khan', 'Karachi', '18-25'),
+('Tariq_Ahmed', 'Karachi', '46+'),
+('Sana_Aziz', 'Karachi', '26-35'),
+('Hamza_Butt', 'Lahore', '18-25'),
+('Aiza_Malik', 'Lahore', '26-35'),
+('Faisal_Ahmad', 'Lahore', '18-25'),
+('Mehwish_Hayat', 'Lahore', '26-35'),
+('Adnan_Khan', 'Lahore', '36-45'),
+('Sadia_Imam', 'Lahore', '18-25'),
+('Waqas_Ali', 'Lahore', '26-35'),
+('Farah_Naz', 'Lahore', '18-25'),
+('Shahid_Afridi', 'Lahore', '26-35'),
+('Ayeza_Butt', 'Lahore', '18-25'),
+('Omer_Sheikh', 'Lahore', '36-45'),
+('Nimra_Khan', 'Lahore', '26-35'),
+('Asad_Malik', 'Lahore', '46+'),
+('Hira_Mani', 'Lahore', '26-35'),
+('Danial_Zafar', 'Lahore', '18-25'),
+('Iqra_Aziz', 'Lahore', '26-35'),
+('Shehryar_Butt', 'Lahore', '36-45'),
+('Kubra_Khan', 'Lahore', '18-25'),
+('Mohsin_Abbas', 'Lahore', '46+'),
+('Neelam_Ali', 'Lahore', '26-35'),
+('Ahsan_Rauf', 'Islamabad', '18-25'),
+('Mahira_Sheikh', 'Islamabad', '26-35'),
+('Saad_Khan', 'Islamabad', '18-25'),
+('Aliya_Mustafa', 'Islamabad', '26-35'),
+('Rizwan_Ahmed', 'Islamabad', '36-45'),
+('Samina_Peerzada', 'Islamabad', '18-25'),
+('Nabeel_Qureshi', 'Islamabad', '26-35'),
+('Zara_Noor', 'Islamabad', '18-25'),
+('Fawad_Chaudhry', 'Islamabad', '26-35'),
+('Maya_Ali', 'Islamabad', '18-25'),
+('Yasir_Hussain', 'Islamabad', '36-45'),
+('Urwa_Hocane', 'Islamabad', '26-35'),
+('Humayun_Saeed', 'Islamabad', '46+'),
+('Maheen_Rizvi', 'Islamabad', '26-35'),
+('Junaid_Khan', 'Islamabad', '18-25'),
+('Talha_Mahmood', 'Rawalpindi', '26-35'),
+('Sidra_Iqbal', 'Rawalpindi', '18-25'),
+('Kashif_Abbasi', 'Rawalpindi', '36-45'),
+('Mawra_Hocane', 'Rawalpindi', '26-35'),
+('Shoaib_Malik', 'Rawalpindi', '18-25'),
+('Aiman_Khan', 'Rawalpindi', '26-35'),
+('Danish_Taimoor', 'Rawalpindi', '36-45'),
+('Kinza_Hashmi', 'Rawalpindi', '18-25'),
+('Babar_Azam', 'Rawalpindi', '26-35'),
+('Areeba_Habib', 'Rawalpindi', '18-25'),
+('Atif_Aslam', 'Faisalabad', '26-35'),
+('Mehreen_Syed', 'Faisalabad', '18-25'),
+('Fahad_Mustafa', 'Faisalabad', '36-45'),
+('Sajal_Aly', 'Faisalabad', '26-35'),
+('Imran_Ashraf', 'Faisalabad', '18-25'),
+('Yumna_Zaidi', 'Faisalabad', '26-35'),
+('Bilal_Abbas', 'Faisalabad', '36-45'),
+('Ramsha_Khan', 'Faisalabad', '18-25'),
+('Ahad_Raza', 'Faisalabad', '26-35'),
+('Alizeh_Shah', 'Faisalabad', '18-25'),
+('Waseem_Badami', 'Multan', '26-35'),
+('Saboor_Aly', 'Multan', '18-25'),
+('Hamza_Abbasi', 'Multan', '36-45'),
+('Ushna_Shah', 'Multan', '26-35'),
+('Osman_Khalid', 'Multan', '18-25'),
+('Armeena_Khan', 'Multan', '26-35'),
+('Muneeb_Butt', 'Multan', '36-45'),
+('Hania_Amir', 'Multan', '18-25'),
+('Shaheen_Afridi', 'Peshawar', '26-35'),
+('Naimal_Khawar', 'Peshawar', '18-25'),
+('Babar_Ali', 'Peshawar', '36-45'),
+('Eshal_Fayyaz', 'Peshawar', '26-35'),
+('Adeel_Chaudhry', 'Peshawar', '18-25'),
+('Sonya_Hussyn', 'Peshawar', '26-35'),
+('Asim_Azhar', 'Peshawar', '36-45'),
+('Minal_Khan', 'Peshawar', '18-25'),
+('Rizwan_Ali', 'Quetta', '26-35'),
+('Hira_Salman', 'Quetta', '18-25'),
+('Junaid_Safdar', 'Quetta', '36-45'),
+('Sanam_Jung', 'Quetta', '26-35'),
+('Shehzad_Roy', 'Quetta', '18-25'),
+('Naseem_Shah', 'Sialkot', '26-35'),
+('Dua_Malik', 'Sialkot', '18-25'),
+('Shaan_Shahid', 'Sialkot', '36-45'),
+('Resham_Khan', 'Sialkot', '26-35');
+INSERT INTO Items (title, genre, item_type) VALUES 
+('The Legend of Maula Jatt', 'Action', 'Pakistani Movie'),
+('Cake', 'Drama', 'Pakistani Movie'),
+('Bol', 'Drama', 'Pakistani Movie'),
+('Khuda Kay Liye', 'Drama', 'Pakistani Movie'),
+('Punjab Nahi Jaungi', 'Romance', 'Pakistani Movie'),
+('Jawani Phir Nahi Ani', 'Comedy', 'Pakistani Movie'),
+('Bin Roye', 'Romance', 'Pakistani Movie'),
+('Waar', 'Action', 'Pakistani Movie'),
+('Actor in Law', 'Comedy', 'Pakistani Movie'),
+('Teefa in Trouble', 'Action', 'Pakistani Movie'),
+('Humsafar', 'Romance', 'Pakistani Drama'),
+('Mere Paas Tum Ho', 'Romance', 'Pakistani Drama'),
+('Alif', 'Spiritual', 'Pakistani Drama'),
+('Yakeen Ka Safar', 'Romance', 'Pakistani Drama'),
+('Diyar-e-Dil', 'Family', 'Pakistani Drama'),
+('Udaari', 'Social', 'Pakistani Drama'),
+('Zindagi Gulzar Hai', 'Romance', 'Pakistani Drama'),
+('Ehd-e-Wafa', 'Friendship', 'Pakistani Drama'),
+('Sang-e-Mah', 'Drama', 'Pakistani Drama'),
+('Ranjha Ranjha Kardi', 'Romance', 'Pakistani Drama'),
+('Tere Bin', 'Romance', 'Pakistani Drama'),
+('Ishq Murshid', 'Romance', 'Pakistani Drama'),
+('Khuda Aur Mohabbat', 'Spiritual', 'Pakistani Drama'),
+('Pyar Ke Sadqay', 'Comedy', 'Pakistani Drama'),
+('Suno Chanda', 'Comedy', 'Pakistani Drama'),
+('Dilwale Dulhania Le Jayenge', 'Romance', 'Bollywood'),
+('3 Idiots', 'Comedy', 'Bollywood'),
+('Bajrangi Bhaijaan', 'Drama', 'Bollywood'),
+('PK', 'Comedy', 'Bollywood'),
+('Dangal', 'Sports', 'Bollywood'),
+('Kabir Singh', 'Romance', 'Bollywood'),
+('War', 'Action', 'Bollywood'),
+('Pathaan', 'Action', 'Bollywood'),
+('Jawan', 'Action', 'Bollywood'),
+('Animal', 'Action', 'Bollywood'),
+('Kuch Kuch Hota Hai', 'Romance', 'Bollywood'),
+('Chennai Express', 'Comedy', 'Bollywood'),
+('Sultan', 'Sports', 'Bollywood'),
+('Tiger Zinda Hai', 'Action', 'Bollywood'),
+('Ae Dil Hai Mushkil', 'Romance', 'Bollywood'),
+('The Matrix', 'Sci-Fi', 'Hollywood'),
+('Inception', 'Sci-Fi', 'Hollywood'),
+('Titanic', 'Romance', 'Hollywood'),
+('The Notebook', 'Romance', 'Hollywood'),
+('Die Hard', 'Action', 'Hollywood'),
+('Mad Max', 'Action', 'Hollywood'),
+('Interstellar', 'Sci-Fi', 'Hollywood'),
+('The Dark Knight', 'Action', 'Hollywood'),
+('Avengers Endgame', 'Action', 'Hollywood'),
+('Fast and Furious 9', 'Action', 'Hollywood'),
+('Avatar', 'Sci-Fi', 'Hollywood'),
+('Jurassic World', 'Action', 'Hollywood'),
+('Spider-Man No Way Home', 'Action', 'Hollywood'),
+('Top Gun Maverick', 'Action', 'Hollywood'),
+('The Fault in Our Stars', 'Romance', 'Hollywood'),
+('Ertugrul Ghazi', 'Historical', 'Turkish Drama'),
+('Kurulus Osman', 'Historical', 'Turkish Drama'),
+('Payitaht Abdulhamid', 'Historical', 'Turkish Drama'),
+('Ishq-e-Memnu', 'Romance', 'Turkish Drama'),
+('Mera Sultan', 'Historical', 'Turkish Drama'),
+('Yunus Emre', 'Spiritual', 'Turkish Drama'),
+('Kara Sevda', 'Romance', 'Turkish Drama'),
+('Ask-i Memnu', 'Romance', 'Turkish Drama'),
+('Fatmagul', 'Drama', 'Turkish Drama'),
+('Magnificent Century', 'Historical', 'Turkish Drama'),
+('Crash Landing on You', 'Romance', 'Korean Drama'),
+('Squid Game', 'Thriller', 'Korean Drama'),
+('Descendants of the Sun', 'Romance', 'Korean Drama'),
+('Goblin', 'Fantasy', 'Korean Drama'),
+('Itaewon Class', 'Drama', 'Korean Drama'),
+('Hotel Del Luna', 'Fantasy', 'Korean Drama'),
+('Start-Up', 'Romance', 'Korean Drama'),
+('Vincenzo', 'Action', 'Korean Drama'),
+('True Beauty', 'Romance', 'Korean Drama'),
+('The Glory', 'Thriller', 'Korean Drama');
 INSERT INTO Interactions (user_id, item_id, rating) VALUES 
-(1, 1, 5.0), -- Matrix
-(1, 2, 4.5), -- Inception
-(1, 5, 2.0); -- Die Hard
-
--- Bob likes Sci-Fi too
-INSERT INTO Interactions (user_id, item_id, rating) VALUES 
-(2, 1, 4.0), -- Matrix
-(2, 2, 5.0), -- Inception
-(2, 6, 3.0); -- Mad Max
-
--- Charlie likes Romance
-INSERT INTO Interactions (user_id, item_id, rating) VALUES 
-(3, 3, 5.0), -- Titanic
-(3, 4, 4.5), -- Notebook
-(3, 1, 2.0); -- Matrix
-
--- David likes Action
-INSERT INTO Interactions (user_id, item_id, rating) VALUES 
-(4, 5, 5.0), -- Die Hard
-(4, 6, 4.5), -- Mad Max
-(4, 2, 3.0); -- Inception
-
--- Eve (New user, few ratings)
-INSERT INTO Interactions (user_id, item_id, rating) VALUES 
-(5, 1, 3.0);
-
+(1, 1, 5.0), (1, 11, 4.5), (1, 12, 5.0), (1, 8, 4.0), (1, 47, 4.5), (1, 60, 4.0),
+(2, 11, 5.0), (2, 12, 4.8), (2, 13, 4.5), (2, 26, 5.0), (2, 31, 4.0), (2, 66, 4.5),
+(3, 1, 5.0), (3, 8, 4.5), (3, 10, 4.0), (3, 32, 5.0), (3, 47, 4.8), (3, 53, 4.5),
+(4, 11, 5.0), (4, 12, 4.5), (4, 17, 4.8), (4, 21, 4.5), (4, 25, 5.0), (4, 14, 4.0),
+(5, 56, 5.0), (5, 57, 4.8), (5, 58, 4.5), (5, 61, 4.0), (5, 1, 3.5), (5, 23, 4.0),
+(6, 5, 4.5), (6, 11, 5.0), (6, 26, 4.8), (6, 43, 4.0), (6, 55, 4.5), (6, 66, 5.0),
+(7, 6, 5.0), (7, 9, 4.5), (7, 24, 4.8), (7, 25, 5.0), (7, 28, 4.0), (7, 37, 3.5),
+(8, 2, 4.5), (8, 3, 5.0), (8, 15, 4.8), (8, 17, 4.5), (8, 27, 4.0), (8, 30, 4.5),
+(9, 41, 5.0), (9, 42, 4.8), (9, 47, 5.0), (9, 52, 4.5), (9, 34, 4.0), (9, 1, 4.5),
+(10, 66, 5.0), (10, 67, 4.8), (10, 68, 5.0), (10, 71, 4.5), (10, 72, 4.8), (10, 11, 4.0),
+(11, 1, 4.5), (11, 8, 5.0), (11, 33, 4.5), (11, 34, 4.8), (11, 39, 4.0), (11, 47, 4.5),
+(12, 11, 5.0), (12, 12, 4.5), (12, 31, 5.0), (12, 40, 4.8), (12, 43, 4.0), (12, 60, 4.5),
+(13, 2, 5.0), (13, 3, 4.8), (13, 4, 4.5), (13, 11, 5.0), (13, 13, 4.5), (13, 18, 4.0),
+(14, 13, 5.0), (14, 23, 4.8), (14, 16, 4.5), (14, 61, 5.0), (14, 56, 4.5), (14, 3, 4.0),
+(15, 30, 5.0), (15, 38, 4.5), (15, 48, 4.8), (15, 34, 4.0), (15, 10, 4.5), (15, 54, 4.0),
+(16, 24, 5.0), (16, 25, 4.8), (16, 5, 4.5), (16, 7, 4.0), (16, 31, 4.5), (16, 26, 5.0),
+(17, 47, 5.0), (17, 48, 4.5), (17, 49, 4.8), (17, 50, 4.0), (17, 33, 4.5), (17, 8, 4.0),
+(18, 11, 5.0), (18, 19, 4.8), (18, 20, 4.5), (18, 21, 5.0), (18, 22, 4.5), (18, 14, 4.0),
+(19, 56, 5.0), (19, 57, 4.8), (19, 58, 4.5), (19, 59, 4.0), (19, 62, 4.5), (19, 63, 4.8),
+(20, 66, 5.0), (20, 69, 4.8), (20, 70, 4.5), (20, 73, 5.0), (20, 74, 4.5), (20, 75, 4.8),
+(21, 1, 5.0), (21, 5, 4.5), (21, 6, 4.8), (21, 9, 4.0), (21, 10, 4.5), (21, 26, 3.5),
+(22, 11, 5.0), (22, 12, 4.8), (22, 14, 4.5), (22, 17, 5.0), (22, 21, 4.5), (22, 22, 4.8),
+(23, 1, 4.5), (23, 8, 5.0), (23, 30, 4.8), (23, 38, 4.5), (23, 48, 5.0), (23, 50, 4.0),
+(24, 26, 5.0), (24, 31, 4.5), (24, 11, 4.8), (24, 12, 4.5), (24, 40, 4.0), (24, 5, 4.5),
+(25, 47, 5.0), (25, 48, 4.8), (25, 49, 4.5), (25, 52, 5.0), (25, 53, 4.5), (25, 54, 4.8),
+(26, 2, 5.0), (26, 3, 4.5), (26, 15, 4.8), (26, 27, 4.5), (26, 56, 4.0), (26, 61, 4.5),
+(27, 6, 5.0), (27, 9, 4.8), (27, 24, 4.5), (27, 25, 5.0), (27, 28, 4.5), (27, 29, 4.0),
+(28, 66, 5.0), (28, 67, 4.8), (28, 71, 4.5), (28, 72, 5.0), (28, 74, 4.5), (28, 11, 4.0),
+(29, 30, 5.0), (29, 38, 4.5), (29, 48, 4.8), (29, 1, 4.5), (29, 34, 4.0), (29, 50, 4.5),
+(30, 11, 5.0), (30, 12, 4.8), (30, 13, 4.5), (30, 18, 4.8), (30, 19, 4.5), (30, 20, 4.0),
+(31, 56, 5.0), (31, 57, 4.8), (31, 60, 4.5), (31, 61, 4.8), (31, 64, 4.5), (31, 65, 4.0),
+(32, 11, 5.0), (32, 21, 4.5), (32, 26, 4.8), (32, 31, 4.5), (32, 43, 4.8), (32, 66, 5.0),
+(33, 1, 4.5), (33, 4, 5.0), (33, 5, 4.0), (33, 7, 4.5), (33, 8, 4.8), (33, 10, 4.0),
+(34, 2, 5.0), (34, 15, 4.5), (34, 17, 4.8), (34, 27, 4.5), (34, 11, 5.0), (34, 56, 4.0),
+(35, 41, 5.0), (35, 42, 4.8), (35, 47, 4.5), (35, 51, 5.0), (35, 52, 4.5), (35, 67, 4.0),
+(36, 11, 5.0), (36, 12, 4.5), (36, 66, 4.8), (36, 69, 4.5), (36, 72, 4.8), (36, 22, 4.0),
+(37, 1, 4.5), (37, 8, 5.0), (37, 33, 4.5), (37, 47, 4.8), (37, 48, 5.0), (37, 53, 4.5),
+(38, 5, 5.0), (38, 11, 4.8), (38, 12, 4.5), (38, 26, 5.0), (38, 31, 4.5), (38, 40, 4.8),
+(39, 6, 5.0), (39, 9, 4.5), (39, 24, 4.8), (39, 25, 5.0), (39, 28, 4.5), (39, 29, 4.0),
+(40, 13, 5.0), (40, 23, 4.8), (40, 61, 4.5), (40, 62, 4.8), (40, 3, 4.0), (40, 4, 4.5),
+(41, 41, 5.0), (41, 47, 4.5), (41, 26, 4.8), (41, 33, 4.5), (41, 52, 4.0), (41, 34, 4.5),
+(42, 11, 5.0), (42, 12, 4.8), (42, 14, 4.5), (42, 18, 5.0), (42, 21, 4.5), (42, 22, 4.0),
+(43, 1, 4.5), (43, 8, 5.0), (43, 47, 4.8), (43, 48, 4.5), (43, 49, 5.0), (43, 34, 4.0),
+(44, 66, 5.0), (44, 68, 4.8), (44, 70, 4.5), (44, 72, 5.0), (44, 74, 4.5), (44, 11, 4.0),
+(45, 56, 5.0), (45, 57, 4.5), (45, 58, 4.8), (45, 59, 4.5), (45, 61, 5.0), (45, 63, 4.0),
+(46, 11, 5.0), (46, 12, 4.5), (46, 21, 4.8), (46, 26, 4.5), (46, 31, 5.0), (46, 66, 4.5),
+(47, 1, 5.0), (47, 2, 4.5), (47, 6, 4.8), (47, 9, 4.5), (47, 10, 4.0), (47, 5, 4.5),
+(48, 6, 4.5), (48, 24, 5.0), (48, 25, 4.8), (48, 5, 4.5), (48, 31, 4.0), (48, 66, 4.5),
+(49, 41, 5.0), (49, 42, 4.8), (49, 47, 4.5), (49, 51, 5.0), (49, 52, 4.5), (49, 67, 4.0),
+(50, 2, 5.0), (50, 3, 4.5), (50, 15, 4.8), (50, 17, 4.5), (50, 11, 5.0), (50, 56, 4.0),
+(51, 6, 5.0), (51, 9, 4.8), (51, 24, 4.5), (51, 25, 5.0), (51, 28, 4.5), (51, 29, 4.0),
+(52, 11, 5.0), (52, 12, 4.8), (52, 19, 4.5), (52, 20, 4.8), (52, 21, 4.5), (52, 14, 4.0),
+(53, 1, 4.5), (53, 3, 5.0), (53, 8, 4.5), (53, 33, 4.8), (53, 47, 4.0), (53, 11, 4.5),
+(54, 66, 5.0), (54, 67, 4.5), (54, 71, 4.8), (54, 73, 4.5), (54, 75, 5.0), (54, 12, 4.0),
+(55, 56, 5.0), (55, 57, 4.5), (55, 11, 4.8), (55, 13, 4.5), (55, 61, 4.0), (55, 23, 4.5),
+(56, 1, 4.5), (56, 8, 5.0), (56, 47, 4.8), (56, 48, 4.5), (56, 33, 5.0), (56, 34, 4.0),
+(57, 11, 5.0), (57, 12, 4.5), (57, 21, 4.8), (57, 26, 4.5), (57, 43, 5.0), (57, 66, 4.5),
+(58, 2, 5.0), (58, 3, 4.5), (58, 4, 4.8), (58, 11, 4.5), (58, 13, 5.0), (58, 15, 4.0),
+(59, 66, 5.0), (59, 69, 4.8), (59, 11, 4.5), (59, 12, 5.0), (59, 72, 4.5), (59, 21, 4.0),
+(60, 30, 5.0), (60, 38, 4.5), (60, 48, 4.8), (60, 1, 4.5), (60, 50, 4.0), (60, 34, 4.5),
+(61, 11, 5.0), (61, 12, 4.8), (61, 14, 4.5), (61, 19, 4.8), (61, 21, 4.5), (61, 22, 5.0),
+(62, 56, 5.0), (62, 58, 4.5), (62, 60, 4.8), (62, 61, 4.5), (62, 64, 4.0), (62, 65, 4.5),
+(63, 5, 5.0), (63, 11, 4.5), (63, 12, 4.8), (63, 26, 4.5), (63, 31, 5.0), (63, 66, 4.5),
+(64, 30, 5.0), (64, 38, 4.8), (64, 1, 4.5), (64, 48, 4.0), (64, 33, 4.5), (64, 34, 4.8),
+(65, 6, 5.0), (65, 24, 4.5), (65, 25, 4.8), (65, 11, 4.5), (65, 12, 4.0), (65, 21, 4.5),
+(66, 5, 5.0), (66, 11, 4.5), (66, 26, 4.8), (66, 31, 4.5), (66, 40, 4.0), (66, 43, 4.5),
+(67, 11, 5.0), (67, 12, 4.8), (67, 21, 4.5), (67, 26, 5.0), (67, 66, 4.5), (67, 69, 4.0),
+(68, 6, 5.0), (68, 9, 4.5), (68, 1, 4.8), (68, 47, 4.5), (68, 48, 4.0), (68, 24, 4.5),
+(69, 11, 5.0), (69, 12, 4.8), (69, 13, 4.5), (69, 14, 5.0), (69, 18, 4.5), (69, 21, 4.8),
+(70, 2, 5.0), (70, 3, 4.5), (70, 11, 4.8), (70, 15, 4.5), (70, 17, 4.0), (70, 56, 4.5),
+(71, 11, 5.0), (71, 12, 4.8), (71, 16, 4.5), (71, 20, 4.8), (71, 21, 4.5), (71, 22, 5.0),
+(72, 56, 5.0), (72, 57, 4.5), (72, 11, 4.8), (72, 13, 4.5), (72, 61, 4.0), (72, 1, 4.5),
+(73, 66, 5.0), (73, 68, 4.8), (73, 70, 4.5), (73, 72, 5.0), (73, 11, 4.5), (73, 12, 4.0),
+(74, 1, 5.0), (74, 8, 4.5), (74, 47, 4.8), (74, 48, 4.5), (74, 33, 5.0), (74, 49, 4.0),
+(75, 11, 5.0), (75, 12, 4.8), (75, 21, 4.5), (75, 26, 5.0), (75, 66, 4.5), (75, 31, 4.0),
+(76, 2, 5.0), (76, 3, 4.5), (76, 11, 4.8), (76, 13, 4.5), (76, 15, 4.0), (76, 17, 4.5),
+(77, 11, 5.0), (77, 12, 4.8), (77, 14, 4.5), (77, 19, 4.8), (77, 21, 4.5), (77, 22, 5.0),
+(78, 13, 5.0), (78, 23, 4.5), (78, 61, 4.8), (78, 1, 4.5), (78, 56, 4.0), (78, 3, 4.5),
+(79, 11, 5.0), (79, 12, 4.5), (79, 21, 4.8), (79, 26, 4.5), (79, 31, 5.0), (79, 66, 4.5),
+(80, 56, 5.0), (80, 57, 4.8), (80, 58, 4.5), (80, 60, 4.8), (80, 61, 4.5), (80, 64, 4.0),
+(81, 66, 5.0), (81, 69, 4.5), (81, 11, 4.8), (81, 12, 4.5), (81, 72, 4.0), (81, 21, 4.5),
+(82, 6, 5.0), (82, 24, 4.5), (82, 2, 4.8), (82, 15, 4.5), (82, 25, 4.0), (82, 11, 4.5),
+(83, 11, 5.0), (83, 12, 4.8), (83, 21, 4.5), (83, 26, 5.0), (83, 66, 4.5), (83, 69, 4.8),
+(84, 30, 5.0), (84, 38, 4.5), (84, 48, 4.8), (84, 1, 4.5), (84, 50, 4.0), (84, 33, 4.5),
+(85, 11, 5.0), (85, 12, 4.8), (85, 13, 4.5), (85, 18, 4.8), (85, 21, 4.5), (85, 14, 5.0),
+(86, 56, 5.0), (86, 61, 4.5), (86, 11, 4.8), (86, 13, 4.5), (86, 57, 4.0), (86, 3, 4.5),
+(87, 11, 5.0), (87, 12, 4.5), (87, 21, 4.8), (87, 26, 4.5), (87, 66, 5.0), (87, 31, 4.0),
+(88, 1, 5.0), (88, 8, 4.5), (88, 47, 4.8), (88, 48, 4.5), (88, 33, 5.0), (88, 34, 4.0),
+(89, 11, 5.0), (89, 12, 4.8), (89, 16, 4.5), (89, 19, 4.8), (89, 20, 4.5), (89, 22, 5.0),
+(90, 5, 5.0), (90, 11, 4.5), (90, 26, 4.8), (90, 31, 4.5), (90, 40, 4.0), (90, 66, 4.5),
+(91, 66, 5.0), (91, 70, 4.8), (91, 11, 4.5), (91, 12, 5.0), (91, 72, 4.5), (91, 21, 4.0),
+(92, 1, 4.5), (92, 11, 5.0), (92, 26, 4.0), (92, 47, 4.5), (92, 56, 4.8), (92, 66, 4.0),
+(93, 11, 5.0), (93, 12, 4.8), (93, 21, 4.5), (93, 26, 5.0), (93, 66, 4.5), (93, 31, 4.0),
+(94, 2, 5.0), (94, 3, 4.5), (94, 11, 4.8), (94, 13, 4.5), (94, 1, 4.0), (94, 4, 4.5),
+(95, 2, 5.0), (95, 15, 4.5), (95, 11, 4.8), (95, 17, 4.5), (95, 56, 4.0), (95, 3, 4.5),
+(96, 13, 5.0), (96, 16, 4.5), (96, 23, 4.8), (96, 3, 4.5), (96, 61, 4.0), (96, 4, 4.5),
+(97, 30, 5.0), (97, 38, 4.5), (97, 1, 4.8), (97, 48, 4.5), (97, 33, 4.0), (97, 50, 4.5),
+(98, 11, 5.0), (98, 12, 4.8), (98, 21, 4.5), (98, 14, 4.8), (98, 19, 4.5), (98, 22, 5.0),
+(99, 1, 5.0), (99, 2, 4.5), (99, 3, 4.8), (99, 4, 4.5), (99, 8, 5.0), (99, 10, 4.0),
+(100, 11, 5.0), (100, 12, 4.5), (100, 21, 4.8), (100, 26, 4.5), (100, 5, 5.0), (100, 31, 4.0);
+SELECT COUNT(*) as total_users FROM Users;
+SELECT COUNT(*) as total_items FROM Items;
+SELECT COUNT(*) as total_interactions FROM Interactions;
+SELECT item_type, COUNT(*) as count 
+FROM Items 
+GROUP BY item_type 
+ORDER BY count DESC;
+SELECT city, COUNT(*) as user_count 
+FROM Users 
+GROUP BY city 
+ORDER BY user_count DESC;
+SELECT 
+    ROUND(AVG(rating), 2) as avg_rating,
+    ROUND(MIN(rating), 2) as min_rating,
+    ROUND(MAX(rating), 2) as max_rating
+FROM Interactions;
+SELECT i.title, i.genre, i.item_type, 
+       COUNT(int.rating) as num_ratings,
+       ROUND(AVG(int.rating), 2) as avg_rating
+FROM Items i
+JOIN Interactions int ON i.item_id = int.item_id
+GROUP BY i.item_id
+ORDER BY avg_rating DESC, num_ratings DESC
+LIMIT 10;
