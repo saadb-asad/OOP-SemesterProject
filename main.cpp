@@ -5,11 +5,9 @@
 
 using namespace std;
 
-// --- Constants ---
 const int MAX_ITEMS = 500;
 const int MAX_USERS = 100;
 
-// --- Helper Functions ---
 string extractValue(string s) {
     size_t first = s.find("'");
     size_t last = s.rfind("'");
@@ -19,10 +17,9 @@ string extractValue(string s) {
     return s;
 }
 
-
 class Item {
 private:
-    int ID; 
+    int ID;
     string Title;
     string Genre;
     string Type;
@@ -30,7 +27,6 @@ private:
     int ratingCount;
 
 public:
-    // Constructors
     Item() {
         ID = 0;
         Title = "";
@@ -40,34 +36,16 @@ public:
         ratingCount = 0;
     }
 
-    // Setters
-    void setID(int i) {
-        ID = i;
-    }
-    void setTitle(string t) {
-        Title = t;
-    }
-    void setGenre(string g) {
-        Genre = g;
-    }
-    void setType(string t) {
-        Type = t;
-    }
+    void setID(int i)       { ID = i; }
+    void setTitle(string t) { Title = t; }
+    void setGenre(string g) { Genre = g; }
+    void setType(string t)  { Type = t; }
 
-    // Getters
-    string getTitle() const {
-        return Title;
-    }
-    string getGenre() const {
-        return Genre;
-    }
-    string getType() const {
-        return Type;
-    }
-    int getId() const {
-        return ID;
-    }
-    
+    string getTitle() const { return Title; }
+    string getGenre() const { return Genre; }
+    string getType()  const { return Type; }
+    int    getId()    const { return ID; }
+
     void addRating(double r) {
         totalRating += r;
         ratingCount++;
@@ -82,10 +60,10 @@ public:
 };
 
 ostream& operator<<(ostream& os, const Item& item) {
-    os << "[" << item.Type << "] " << item.Title << " (Rating: " << item.getAverageRating() << ")";
+    os << "[" << item.Type << "] " << item.Title
+       << " (Rating: " << item.getAverageRating() << ")";
     return os;
 }
-
 
 class Person {
 protected:
@@ -93,60 +71,127 @@ protected:
     string City;
 
 public:
-    Person() {
-        Name = "";
-        City = "";
+    Person() : Name(""), City("") {}
+    Person(string n, string c) : Name(n), City(c) {}
+
+    string getName() const { return Name; }
+    string getCity() const { return City; }
+
+    // POLYMORPHISM: virtual function allows subclasses to provide their own version of display()
+    virtual void display() const {
+        cout << "Person: " << Name << " from " << City << endl;
     }
-    Person(string n, string c) {
-        Name = n;
-        City = c;
-    }
-    
-    string getName() const {
-        return Name;
-    }
-    string getCity() const {
-        return City;
-    }
+
+    virtual ~Person() {}
 };
 
 class User : public Person {
 private:
-    int Id;
+    int    Id;
     string AgeGroup;
 
 public:
-    User() {
-        Person();
-        Id = 0;
-        AgeGroup = "";
-    }
-    User(string n, string c, int id,string a) {
-        Person(n,c);
-        Id = id;
-        AgeGroup = a;
-    }
+    User() : Person(), Id(0), AgeGroup("") {}
+    User(int id, string n, string c, string a)
+        : Person(n, c), Id(id), AgeGroup(a) {}
 
-    int getId() const { 
-        return Id;
+    int getId() const { return Id; }
+
+    // POLYMORPHISM: overrides Person::display() — called automatically when using a Person* pointer
+    void display() const override {
+        cout << "User #" << Id << ": " << Name
+             << " | City: " << City
+             << " | Age Group: " << AgeGroup << endl;
     }
 
     bool operator==(const User& other) const {
-        return this->name == other.name;
+        return this->Name == other.Name;
+    }
+};
+
+// POLYMORPHISM: abstract base class with a pure virtual function
+// Any class that inherits from this must implement its own recommend()
+class BaseRecommender {
+public:
+    virtual void recommend() = 0;
+    virtual ~BaseRecommender() {}
+};
+
+class GenreRecommender : public BaseRecommender {
+private:
+    Item*  items;     // POINTER: points to the items array in RecommendationSystem
+    int    itemCount;
+    string genre;
+
+public:
+    GenreRecommender(Item* itemsPtr, int count, string g)
+        : items(itemsPtr), itemCount(count), genre(g) {}
+
+    // POLYMORPHISM: overrides BaseRecommender::recommend() for genre-based recommendations
+    void recommend() override {
+        cout << "\n-- Genre Recommendations: " << genre << " --" << endl;
+        bool found = false;
+        for (int i = 0; i < itemCount; i++) {
+            if (items[i].getGenre() == genre) {
+                cout << " - " << items[i] << endl;
+                found = true;
+            }
+        }
+        if (!found) cout << "No items found for this genre." << endl;
+    }
+};
+
+class PersonalRecommender : public BaseRecommender {
+private:
+    Item* items;    // POINTER: points to the items array in RecommendationSystem
+    int   itemCount;
+    User* user;     // POINTER: points to the currently logged-in user
+
+public:
+    PersonalRecommender(Item* itemsPtr, int count, User* u)
+        : items(itemsPtr), itemCount(count), user(u) {}
+
+    // POLYMORPHISM: overrides BaseRecommender::recommend() for personalized recommendations
+    void recommend() override {
+        cout << "\n-- Personalized Recommendations for "
+             << user->getName() << " --" << endl;
+        cout << "Because you are from " << user->getCity()
+             << ", here are our top picks:" << endl;
+
+        Item tempItems[MAX_ITEMS];
+        for (int i = 0; i < itemCount; i++) tempItems[i] = items[i];
+
+        for (int i = 0; i < itemCount; i++) {
+            for (int j = 0; j < itemCount - 1; j++) {
+                if (tempItems[j].getAverageRating() < tempItems[j+1].getAverageRating()) {
+                    Item temp      = tempItems[j];
+                    tempItems[j]   = tempItems[j+1];
+                    tempItems[j+1] = temp;
+                }
+            }
+        }
+
+        for (int i = 0; i < 3 && i < itemCount; i++) {
+            cout << (i+1) << ". " << tempItems[i] << endl;
+        }
     }
 };
 
 class RecommendationSystem {
 private:
-    Item items[MAX_ITEMS];
-    int itemCount;
+    Item* items;    // POINTER: heap-allocated array of Items (using new/delete)
+    int   itemCount;
+
     User users[MAX_USERS];
-    int userCount;
+    int  userCount;
 
 public:
-    RecommendationSystem() {
-        itemCount = 0;
-        userCount = 0;
+    RecommendationSystem() : itemCount(0), userCount(0) {
+        items = new Item[MAX_ITEMS];    // POINTER: allocate items array on the heap
+    }
+
+    ~RecommendationSystem() {
+        delete[] items;                 // POINTER: release heap memory to avoid memory leak
     }
 
     void loadData() {
@@ -161,61 +206,51 @@ public:
 
         while (getline(file, line)) {
             if (line.find("INSERT INTO Users") != string::npos) {
-                mode = 1;
-                continue;
+                mode = 1; continue;
             } else if (line.find("INSERT INTO Items") != string::npos) {
-                mode = 2;
-                continue;
+                mode = 2; continue;
             } else if (line.find("INSERT INTO Interactions") != string::npos) {
-                mode = 3;
-                continue;
+                mode = 3; continue;
             }
 
             if (mode == 1) {
-                 size_t startPos = line.find("(");
-                 size_t endPos = line.find(")");
-                 if (startPos != string::npos && endPos != string::npos) {
+                size_t startPos = line.find("(");
+                size_t endPos   = line.find(")");
+                if (startPos != string::npos && endPos != string::npos) {
                     string content = line.substr(startPos + 1, endPos - startPos - 1);
-
                     size_t c1 = content.find(",");
                     size_t c2 = content.find(",", c1 + 1);
                     if (c1 != string::npos && c2 != string::npos) {
                         string u = extractValue(content.substr(0, c1));
                         string c = extractValue(content.substr(c1 + 1, c2 - c1 - 1));
                         string a = extractValue(content.substr(c2 + 1));
-                        
                         if (userCount < MAX_USERS) {
                             users[userCount] = User(userCount + 1, u, c, a);
                             userCount++;
                         }
                     }
-                 }
-            }
-
-            else if (mode == 2) { // Items
+                }
+            } else if (mode == 2) {
                 size_t startPos = line.find("(");
-                size_t endPos = line.find(")");
+                size_t endPos   = line.find(")");
                 if (startPos != string::npos && endPos != string::npos) {
                     string content = line.substr(startPos + 1, endPos - startPos - 1);
                     size_t c1 = content.find(",");
                     size_t c2 = content.find(",", c1 + 1);
                     if (c1 != string::npos && c2 != string::npos) {
-                        string t = extractValue(content.substr(0, c1));
-                        string g = extractValue(content.substr(c1 + 1, c2 - c1 - 1));
+                        string t  = extractValue(content.substr(0, c1));
+                        string g  = extractValue(content.substr(c1 + 1, c2 - c1 - 1));
                         string Ty = extractValue(content.substr(c2 + 1));
-                        
                         if (itemCount < MAX_ITEMS) {
-                            items[itemCount].setId(itemCount + 1); 
+                            items[itemCount].setID(itemCount + 1);
                             items[itemCount].setTitle(t);
                             items[itemCount].setGenre(g);
                             items[itemCount].setType(Ty);
-                            itemCount++; 
+                            itemCount++;
                         }
                     }
                 }
-            }
-
-            else if (mode == 3) { // Interactions
+            } else if (mode == 3) {
                 size_t pos = 0;
                 while ((pos = line.find("(", pos)) != string::npos) {
                     size_t end = line.find(")", pos);
@@ -223,11 +258,11 @@ public:
                     string content = line.substr(pos + 1, end - pos - 1);
                     stringstream ss(content);
                     string val1, val2, val3;
-                    getline(ss, val1, ','); 
-                    getline(ss, val2, ','); 
-                    getline(ss, val3, ','); 
+                    getline(ss, val1, ',');
+                    getline(ss, val2, ',');
+                    getline(ss, val3, ',');
                     if (!val2.empty() && !val3.empty()) {
-                        int i_id = stoi(val2);
+                        int    i_id = stoi(val2);
                         double rate = stod(val3);
                         if (i_id > 0 && i_id <= itemCount) {
                             items[i_id - 1].addRating(rate);
@@ -236,101 +271,91 @@ public:
                     pos = end + 1;
                 }
             }
-
-            if (line.find(";") != string::npos) mode = 0; 
+            if (line.find(";") != string::npos) mode = 0;
         }
         file.close();
-        cout << "System Loaded: " << itemCount << " Items and " << userCount << " Users." << endl;
+        cout << "System Loaded: " << itemCount << " Items and "
+             << userCount << " Users." << endl;
     }
 
     User* login(string username) {
         User temp(0, username, "", "");
-        for(int i=0; i<userCount; i++) {
-            if (users[i] == temp) {
+        for (int i = 0; i < userCount; i++) {
+            if (users[i] == temp)
                 return &users[i];
-            }
         }
         return NULL;
     }
 
-
-    void recommend(string genre) {
-        cout << "Recommendations for Genre: " << genre << endl;
-        bool found = false;
-        for (int i = 0; i < itemCount; i++) {
-            if (items[i].getGenre() == genre) {
-                // Using operator<<
-                cout << " - " << items[i] << endl;
-                found = true;
-            }
-        }
-        if (!found) cout << "No items found." << endl;
+    // POLYMORPHISM: accepts a BaseRecommender* so it works with any recommender type
+    void runRecommender(BaseRecommender* recommender) {
+        recommender->recommend();
     }
 
-
-    void recommend(User* user) {
-        cout << "\nPersonalized Recommendations for " << user->getName() << " ---" << endl;
-        cout << "Because you are from " << user->getCity() << "..." << endl;
-        showTopPicks();
-    }
-
-    void showTopPicks() {
-        Item tempItems[MAX_ITEMS]; 
-        int count = itemCount;
-        for(int i=0; i<count; i++) tempItems[i] = items[i];
-        
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < count - 1; j++) {
-                if (tempItems[j].getAverageRating() < tempItems[j+1].getAverageRating()) {
-                    Item temp = tempItems[j];
-                    tempItems[j] = tempItems[j+1];
-                    tempItems[j+1] = temp;
-                }
-            }
-        }
-        
-        for (int i = 0; i < 3 && i < count; i++) {
-            cout << (i+1) << ". " << tempItems[i] << endl;
-        }
-    }
+    Item* getItems()     { return items; }
+    int   getItemCount() { return itemCount; }
 };
-
 
 int main() {
     cout << "-- Movie Recommendation System --" << endl;
+
     RecommendationSystem sys;
     sys.loadData();
-    
+
     cout << "\n-- Login --" << endl;
     string username;
     cout << "Enter Username (e.g., Ahmed_Khan): ";
     getline(cin, username);
 
-    User* currentUser = sys.login(username);
+    User* currentUser = sys.login(username);    // POINTER: holds address of the matched user
 
     if (currentUser != NULL) {
-        cout << "Login Successful! Welcome, " << currentUser->getName() << "." << endl;
-        
-        // Use Overloaded Function 2
-        sys.recommend(currentUser);
+        cout << "Login Successful!" << endl;
 
-        // Interactive Genre Search
+
+
+
+
+
+        // POLYMORPHISM: Person* pointing to a User object calls User::display(), not Person::display()
+        Person* personPtr = currentUser;
+        personPtr->display();
+
+
+
+
+
+
+
+        // POLYMORPHISM + POINTER: BaseRecommender* points to a PersonalRecommender object
+        BaseRecommender* recommender = new PersonalRecommender(
+            sys.getItems(), sys.getItemCount(), currentUser
+        );
+
+
+
+        sys.runRecommender(recommender);
+        delete recommender;
+
         cout << "\nWould you like to browse by genre? (yes/no): ";
         string choice;
         getline(cin, choice);
-        if (choice == "Y" ) {
-             cout << "Enter Genre: ";
-             string g;
-             getline(cin, g);
-             // Use Overloaded Function 1
-             sys.recommend(g);
+        if (choice == "yes" || choice == "y" || choice == "Y") {
+            cout << "Enter Genre: ";
+            string g;
+            getline(cin, g);
+
+            // POLYMORPHISM + POINTER: same BaseRecommender* now points to a GenreRecommender object
+            recommender = new GenreRecommender(
+                sys.getItems(), sys.getItemCount(), g
+            );
+            sys.runRecommender(recommender);
+            delete recommender;
         }
 
     } else {
-        cout << "User not found! Please register or check spelling." << endl;
+        cout << "User not found! Please check spelling." << endl;
     }
 
     return 0;
 }
-
-
