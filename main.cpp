@@ -2,11 +2,14 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
 const int MAX_ITEMS = 500;
 const int MAX_USERS = 100;
+
+// Helper Function
 
 string extractValue(string s) {
     size_t first = s.find("'");
@@ -27,6 +30,9 @@ private:
     int ratingCount;
 
 public:
+
+// Constructor
+// Parametrised
     Item() {
         ID = 0;
         Title = "";
@@ -35,16 +41,37 @@ public:
         totalRating = 0.0;
         ratingCount = 0;
     }
+// Setters
 
-    void setID(int i)       { ID = i; }
-    void setTitle(string t) { Title = t; }
-    void setGenre(string g) { Genre = g; }
-    void setType(string t)  { Type = t; }
+    void setID(int i) {
+        ID = i; 
+    }
+    void setTitle(string t) {
+        Title = t; 
+    }
+    void setGenre(string g) {
+        Genre = g; 
+    }
+    void setType(string t)  {
+        Type = t; 
+    }
 
-    string getTitle() const { return Title; }
-    string getGenre() const { return Genre; }
-    string getType()  const { return Type; }
-    int    getId()    const { return ID; }
+// Getters
+
+    string getTitle() const {
+        return Title; 
+    }
+    string getGenre() const {
+        return Genre; 
+    }
+    string getType()  const {
+        return Type;
+    }
+    int getId() const {
+        return ID; 
+    }
+
+// Rating Logic
 
     void addRating(double r) {
         totalRating += r;
@@ -52,7 +79,8 @@ public:
     }
 
     double getAverageRating() const {
-        if (ratingCount == 0) return 0.0;
+        if (ratingCount == 0) 
+            return 0.0;
         return totalRating / ratingCount;
     }
 
@@ -65,19 +93,39 @@ ostream& operator<<(ostream& os, const Item& item) {
     return os;
 }
 
+// Base/Parent Class
+
 class Person {
 protected:
     string Name;
     string City;
 
 public:
-    Person() : Name(""), City("") {}
-    Person(string n, string c) : Name(n), City(c) {}
 
-    string getName() const { return Name; }
-    string getCity() const { return City; }
+// Constructors
+// Default
+    Person(){
+        Name = "";
+        City = "";
+    }
 
-    // POLYMORPHISM: virtual function allows subclasses to provide their own version of display()
+// Parametrised
+
+    Person(string n, string c){
+        Name = n;
+        City = c;
+    }
+
+
+// Getters
+    string getName() const { 
+        return Name;
+    }
+    string getCity() const {
+        return City;
+    }
+
+// virtual function allows subclasses to provide their own version of display()
     virtual void display() const {
         cout << "Person: " << Name << " from " << City << endl;
     }
@@ -85,25 +133,42 @@ public:
     virtual ~Person() {}
 };
 
+
+// Derived/Child Class
+
 class User : public Person {
 private:
     int    Id;
     string AgeGroup;
 
 public:
-    User() : Person(), Id(0), AgeGroup("") {}
-    User(int id, string n, string c, string a)
-        : Person(n, c), Id(id), AgeGroup(a) {}
 
-    int getId() const { return Id; }
-
-    // POLYMORPHISM: overrides Person::display() — called automatically when using a Person* pointer
-    void display() const override {
-        cout << "User #" << Id << ": " << Name
-             << " | City: " << City
-             << " | Age Group: " << AgeGroup << endl;
+// Constructors
+// Default
+    User(){
+        Person();
+        Id = 0;
+        AgeGroup = "";
     }
 
+// Parametrised
+    User(int id, string n, string c, string a){
+            Person(n, c);
+            Id = id;
+            AgeGroup = a;
+        }
+
+// Getter
+    int getId() const { 
+        return Id; 
+    }
+
+// overrides Person::display() is called automatically when using a Person* pointer
+    void display() const override {
+        cout << "User #" << Id << ": " << Name << " | City: " << City << " | Age Group: " << AgeGroup << endl;
+    }
+
+// Making sure only identical objects are considered same
     bool operator==(const User& other) const {
         return this->Name == other.Name;
     }
@@ -119,15 +184,22 @@ public:
 
 class GenreRecommender : public BaseRecommender {
 private:
-    Item*  items;     // POINTER: points to the items array in RecommendationSystem
+    Item*  items;     // Points to the items array in RecommendationSystem
     int    itemCount;
     string genre;
 
 public:
-    GenreRecommender(Item* itemsPtr, int count, string g)
-        : items(itemsPtr), itemCount(count), genre(g) {}
 
-    // POLYMORPHISM: overrides BaseRecommender::recommend() for genre-based recommendations
+// Constructors
+// Parametrised
+    GenreRecommender(Item* itemsPtr, int count, string g)
+        : items(itemsPtr), itemCount(count), genre(g) {
+            items = itemsptr;
+            itemCount = count;
+            genre = g;
+        }
+
+// Overrides BaseRecommender::recommend() for genre-based recommendations
     void recommend() override {
         cout << "\n-- Genre Recommendations: " << genre << " --" << endl;
         bool found = false;
@@ -143,15 +215,21 @@ public:
 
 class PersonalRecommender : public BaseRecommender {
 private:
-    Item* items;    // POINTER: points to the items array in RecommendationSystem
+    Item* items;    // POINTER
     int   itemCount;
-    User* user;     // POINTER: points to the currently logged-in user
+    User* user;     // POINTER
 
 public:
-    PersonalRecommender(Item* itemsPtr, int count, User* u)
-        : items(itemsPtr), itemCount(count), user(u) {}
 
-    // POLYMORPHISM: overrides BaseRecommender::recommend() for personalized recommendations
+// Constructor
+// Parametrised
+    PersonalRecommender(Item* itemsPtr, int count, User* u) {
+            items = itemsPtr;
+            itemcount = count;
+            user = u;
+        }
+
+// Overrides BaseRecommender::recommend() for personalized recommendations
     void recommend() override {
         cout << "\n-- Personalized Recommendations for "
              << user->getName() << " --" << endl;
@@ -179,21 +257,27 @@ public:
 
 class RecommendationSystem {
 private:
-    Item* items;    // POINTER: heap-allocated array of Items (using new/delete)
+    Item* items;    // POINTER
     int   itemCount;
 
     User users[MAX_USERS];
     int  userCount;
 
 public:
-    RecommendationSystem() : itemCount(0), userCount(0) {
-        items = new Item[MAX_ITEMS];    // POINTER: allocate items array on the heap
+    RecommendationSystem() {
+        itemCount = 0;
+        userCount = 0;
+        items = new Item[MAX_ITEMS];    // POINTER
     }
 
     ~RecommendationSystem() {
-        delete[] items;                 // POINTER: release heap memory to avoid memory leak
+        delete[] items;                 // POINTER
     }
 
+
+
+
+// ----------------------------------------------------------------------------------------------
     void loadData() {
         ifstream file("Sample Database.sql");
         if (!file.is_open()) {
@@ -230,7 +314,8 @@ public:
                         }
                     }
                 }
-            } else if (mode == 2) {
+            } 
+            else if (mode == 2) {
                 size_t startPos = line.find("(");
                 size_t endPos   = line.find(")");
                 if (startPos != string::npos && endPos != string::npos) {
@@ -250,7 +335,8 @@ public:
                         }
                     }
                 }
-            } else if (mode == 3) {
+            } 
+            else if (mode == 3) {
                 size_t pos = 0;
                 while ((pos = line.find("(", pos)) != string::npos) {
                     size_t end = line.find(")", pos);
@@ -278,6 +364,9 @@ public:
              << userCount << " Users." << endl;
     }
 
+
+// --------------------------------------------------------------------------------------------------
+
     User* login(string username) {
         User temp(0, username, "", "");
         for (int i = 0; i < userCount; i++) {
@@ -287,75 +376,72 @@ public:
         return NULL;
     }
 
-    // POLYMORPHISM: accepts a BaseRecommender* so it works with any recommender type
+
+// Accepts a BaseRecommender* so it works with any recommender type
     void runRecommender(BaseRecommender* recommender) {
         recommender->recommend();
     }
 
-    Item* getItems()     { return items; }
-    int   getItemCount() { return itemCount; }
+
+// Getters
+    Item* getItems()     { 
+        return items; 
+    }
+    int getItemCount() {
+        return itemCount; 
+    }
 };
 
 int main() {
     cout << "-- Movie Recommendation System --" << endl;
 
-    RecommendationSystem sys;
-    sys.loadData();
+    RecommendationSystem user_chachu;
+    user_chachu.loadData();
 
     cout << "\n-- Login --" << endl;
     string username;
     cout << "Enter Username (e.g., Ahmed_Khan): ";
     getline(cin, username);
 
-    User* currentUser = sys.login(username);    // POINTER: holds address of the matched user
+    User* currentUser = user_chachu.login(username);    // POINTER
 
     if (currentUser != NULL) {
         cout << "Login Successful!" << endl;
 
 
-
-
-
-
-        // POLYMORPHISM: Person* pointing to a User object calls User::display(), not Person::display()
+// Person* pointing to a User object calls User::display(), not Person::display()
         Person* personPtr = currentUser;
         personPtr->display();
 
 
 
+// BaseRecommender* points to a PersonalRecommender object
+        BaseRecommender* recommender = new PersonalRecommender(user_chachu.getItems(), user_chachu.getItemCount(), currentUser);
 
 
 
-
-        // POLYMORPHISM + POINTER: BaseRecommender* points to a PersonalRecommender object
-        BaseRecommender* recommender = new PersonalRecommender(
-            sys.getItems(), sys.getItemCount(), currentUser
-        );
-
-
-
-        sys.runRecommender(recommender);
+        user_chachu.runRecommender(recommender);
         delete recommender;
 
         cout << "\nWould you like to browse by genre? (yes/no): ";
         string choice;
         getline(cin, choice);
-        if (choice == "yes" || choice == "y" || choice == "Y") {
+        if (choice.empty() || choice == "yes" || choice == "y" || choice == "Y") {
             cout << "Enter Genre: ";
             string g;
             getline(cin, g);
 
-            // POLYMORPHISM + POINTER: same BaseRecommender* now points to a GenreRecommender object
-            recommender = new GenreRecommender(
-                sys.getItems(), sys.getItemCount(), g
-            );
+// Same BaseRecommender* now points to a GenreRecommender object
+            recommender = new GenreRecommender(user_chachu.getItems(), user_chachu.getItemCount(), g);
             sys.runRecommender(recommender);
             delete recommender;
         }
 
-    } else {
-        cout << "User not found! Please check spelling." << endl;
+    } 
+    else {
+        cout << "User not found, Please check spelling." << endl;
     }
 
     return 0;
+
 }
